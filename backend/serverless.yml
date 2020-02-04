@@ -64,6 +64,24 @@ functions:
         Action: xray:PutTraceSegments
         Resource: '*'
 
+  GetAllSwaps:
+    handler: src/lambda/http/getSwaps.handler
+    events:
+      - http:
+          method: get
+          path: swaps/all
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:Scan
+        Resource: ${self:provider.environment.SWAPS_TABLE_ARN}
+      - Effect: Allow
+        Action: xray:PutTelemetryRecords
+        Resource: '*'
+      - Effect: Allow
+        Action: xray:PutTraceSegments
+        Resource: '*'
+
   CreateSwap:
     handler: src/lambda/http/createSwap.handler
     events:
