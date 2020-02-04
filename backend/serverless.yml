@@ -39,7 +39,7 @@ provider:
   environment:
     SWAPS_TABLE: Swaps-${self:provider.stage}
     SWAPS_TABLE_ARN: 'arn:aws:dynamodb:us-east-1:*:table/${self:provider.environment.SWAPS_TABLE}'
-    FILE_UPLOAD_S3_BUCKET: file-upload-s3-bucket-${self:provider.stage}
+    FILE_UPLOAD_S3_BUCKET: swaps-s3-bucket-${self:provider.stage}
     INDEX_NAME: user-index
 
 functions:
@@ -65,7 +65,7 @@ functions:
         Resource: '*'
 
   GetAllSwaps:
-    handler: src/lambda/http/getSwaps.handler
+    handler: src/lambda/http/getAllSwaps.handler
     events:
       - http:
           method: get
