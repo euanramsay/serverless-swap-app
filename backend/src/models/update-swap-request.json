@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "update-swap",
+  "type": "object",
+  "properties": {
+    "description": {
+      "type": "string"
+    },
+    "dueDate": {
+      "type": "string"
+    },
+    "swapped": {
+      "type": "boolean"
+    }
+  },
+  "required": ["name", "dueDate", "done"],
+  "additionalProperties": false
+}
