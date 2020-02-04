@@ -7,7 +7,7 @@ const fileUploadS3Bucket = process.env.FILE_UPLOAD_S3_BUCKET
 const swapAccess = new SwapAccess()
 
 export async function createSwap(
-  info: string,
+  description: string,
   dueDate: string,
   userId: string
 ): Promise<SwapItem> {
@@ -19,7 +19,7 @@ export async function createSwap(
     swapId,
     userId,
     createdAt,
-    info,
+    description,
     dueDate,
     swapped: false,
     attachmentUrl
