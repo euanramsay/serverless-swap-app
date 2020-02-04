@@ -1,0 +1,212 @@
+service:
+  name: serverless-swap-app
+
+plugins:
+  - serverless-webpack
+  - serverless-iam-roles-per-function
+  - serverless-reqvalidator-plugin
+  - serverless-aws-documentation
+
+package:
+  individually: true
+
+custom:
+  documentation:
+    api:
+      info:
+        version: v1.0.0
+        title: Swap API
+        description: Serverless swap application
+    models:
+      - name: CreateSwap
+        contentType: application/json
+        schema: ${file(models/create-swap-request.json)}
+      - name: UpdateSwap
+        contentType: application/json
+        schema: ${file(models/update-swap-request.json)}
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+
+  tracing:
+    lambda: true
+    apiGateway: true
+
+  environment:
+    SWAPS_TABLE: Swaps-${self:provider.stage}
+    SWAPS_TABLE_ARN: "arn:aws:dynamodb:us-east-1:*:table/${self:provider.environment.SWAPS_TABLE}"
+    FILE_UPLOAD_S3_BUCKET: file-upload-s3-bucket-${self:provider.stage}
+    INDEX_NAME: user-index
+
+functions:
+  Auth:
+    handler: src/lambda/auth/auth0Authorizer.handler
+
+  GetSwaps:
+    handler: src/lambda/http/getSwaps.handler
+    events:
+      - http:
+          method: get
+          path: swaps
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:Query
+        Resource: ${self:provider.environment.SWAPS_TABLE_ARN}/index/${self:provider.environment.INDEX_NAME}
+      - Effect: Allow
+        Action: xray:PutTelemetryRecords
+        Resource: "*"
+      - Effect: Allow
+        Action: xray:PutTraceSegments
+        Resource: "*"
+
+  CreateSwap:
+    handler: src/lambda/http/createSwap.handler
+    events:
+      - http:
+          method: post
+          path: swaps
+          cors: true
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Create swap
+            description: Create a new swap
+            requestModels:
+              "application/json": CreateSwap
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:PutItem
+        Resource: ${self:provider.environment.SWAPS_TABLE_ARN}
+      - Effect: Allow
+        Action: xray:PutTelemetryRecords
+        Resource: "*"
+      - Effect: Allow
+        Action: xray:PutTraceSegments
+        Resource: "*"
+
+  UpdateSwap:
+    handler: src/lambda/http/updateSwap.handler
+    events:
+      - http:
+          method: any
+          path: swaps/{swapId}
+          cors: true
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Update swap
+            description: Update a swap
+            requestModels:
+              "application/json": UpdateSwap
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:UpdateItem
+        Resource: ${self:provider.environment.SWAPS_TABLE_ARN}
+      - Effect: Allow
+        Action: xray:PutTelemetryRecords
+        Resource: "*"
+      - Effect: Allow
+        Action: xray:PutTraceSegments
+        Resource: "*"
+
+  DeleteSwap:
+    handler: src/lambda/http/deleteSwap.handler
+    events:
+      - http:
+          method: delete
+          path: swaps/{swapId}
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:DeleteItem
+        Resource: ${self:provider.environment.SWAPS_TABLE_ARN}
+      - Effect: Allow
+        Action: xray:PutTelemetryRecords
+        Resource: "*"
+      - Effect: Allow
+        Action: xray:PutTraceSegments
+        Resource: "*"
+
+  GenerateUploadUrl:
+    handler: src/lambda/http/generateUploadUrl.handler
+    events:
+      - http:
+          method: post
+          path: swaps/{swapId}/attachment
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action: xray:PutTelemetryRecords
+        Resource: "*"
+      - Effect: Allow
+        Action: xray:PutTraceSegments
+        Resource: "*"
+
+resources:
+  Resources:
+    RequestBodyValidator:
+      Type: AWS::ApiGateway::RequestValidator
+      Properties:
+        Name: "request-body-validator"
+        RestApiId:
+          Ref: "ApiGatewayRestApi"
+        ValidateRequestBody: true
+        ValidateRequestParameters: false
+
+    SwapsDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: swapId
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: swapId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.SWAPS_TABLE}
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.INDEX_NAME}
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+
+    UploadBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.FILE_UPLOAD_S3_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - "*"
+              AllowedHeaders:
+                - "*"
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
+
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: MyPolicy
+          Version: "2012-10-17"
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: "*"
+              Action: ["s3:GetObject", "s3:Put*"]
+              Resource: "arn:aws:s3:::${self:provider.environment.FILE_UPLOAD_S3_BUCKET}/*"
+        Bucket: !Ref UploadBucket
