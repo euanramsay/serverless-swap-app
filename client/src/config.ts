@@ -1,4 +1,3 @@
-// TODO: Once your application is deployed, copy an API id here so that the frontend could interact with it
 const apiId = '07hl13ggw7'
 const region = 'us-east-1'
 const stage = 'dev'
