@@ -32,8 +32,8 @@ export async function deleteSwap(swapId: string) {
   return swapAccess.deleteSwapData(swapId)
 }
 
-export async function getAllSwaps(): Promise<SwapItem[]> {
-  return swapAccess.getAllSwapsData()
+export async function getFeedSwaps(userId: string): Promise<SwapItem[]> {
+  return swapAccess.getFeedSwapsData(userId)
 }
 
 export function getSignedUrl(swapId: string): string {

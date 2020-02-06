@@ -15,7 +15,7 @@ import {
 import {
   createSwap,
   deleteSwap,
-  getAllSwaps,
+  getFeedSwaps,
   patchSwap
 } from '../api/swaps-api'
 
@@ -102,7 +102,7 @@ export class Swaps extends React.PureComponent<SwapsProps, SwapsState> {
 
   async componentDidMount() {
     try {
-      const swaps = await getAllSwaps(this.props.auth.getIdToken())
+      const swaps = await getFeedSwaps(this.props.auth.getIdToken())
       this.setState({
         swaps,
         loadingSwaps: false
@@ -173,71 +173,141 @@ export class Swaps extends React.PureComponent<SwapsProps, SwapsState> {
     const jwtToken: string = this.props.auth.getIdToken()
     const userId: string = decode(jwtToken)!.sub
     return (
-      <Grid>
-        {this.state.swaps.map((swap, pos) => (
-          <Card key={pos}>
-            <Image src={swap.attachmentUrl} wrapped ui={false} />
-            <Card.Content>
-              <Card.Header>{swap.description}</Card.Header>
-              <Card.Meta>
-                <span className="date">{`Posted: ${dateFormat(
-                  swap.createdAt,
-                  'dd-mm-yyyy'
-                )}`}</span>
-              </Card.Meta>
-            </Card.Content>
-            {userId === swap.userId && (
-              <>
-                {swap.offers > 0 && (
-                  <Step.Group>
-                    <Step>
-                      <Icon name="handshake" />
-                      <Step.Content>
-                        <Step.Title>You got swapped!</Step.Title>
-                        {swap.offers > 1 ? (
-                          <Step.Description>
-                            {`${swap.offers} people want to swap`}
-                          </Step.Description>
-                        ) : (
-                          <Step.Description>
-                            {'1 person wants to swap'}
-                          </Step.Description>
-                        )}
-                      </Step.Content>
-                    </Step>
-                  </Step.Group>
-                )}
+      <Grid columns={2} relaxed="very" stackable>
+        <Grid.Column>
+          <Header as="h2">Swap feed</Header>
+          {this.state.swaps.map((swap, pos) => (
+            <Card key={pos}>
+              <Image src={swap.attachmentUrl} wrapped ui={false} />
+              <Card.Content>
+                <Card.Header>{swap.description}</Card.Header>
+                <Card.Meta>
+                  <span className="date">{`Posted: ${dateFormat(
+                    swap.createdAt,
+                    'dd-mm-yyyy'
+                  )}`}</span>
+                </Card.Meta>
+              </Card.Content>
+              {userId === swap.userId && (
+                <>
+                  {swap.offers > 0 && (
+                    <Step.Group>
+                      <Step>
+                        <Icon name="handshake" />
+                        <Step.Content>
+                          <Step.Title>You got swapped!</Step.Title>
+                          {swap.offers > 1 ? (
+                            <Step.Description>
+                              {`${swap.offers} people want to swap`}
+                            </Step.Description>
+                          ) : (
+                            <Step.Description>
+                              {'1 person wants to swap'}
+                            </Step.Description>
+                          )}
+                        </Step.Content>
+                      </Step>
+                    </Step.Group>
+                  )}
+                  <Card.Content extra>
+                    <Button
+                      icon
+                      color="blue"
+                      onClick={() => this.onEditButtonClick(swap.swapId)}
+                    >
+                      <Icon name="upload" />
+                    </Button>
+                    <Button
+                      icon
+                      color="red"
+                      onClick={() => this.onSwapDelete(swap.swapId)}
+                    >
+                      <Icon name="delete" />
+                    </Button>
+                  </Card.Content>
+                </>
+              )}
+              {userId !== swap.userId && (
                 <Card.Content extra>
                   <Button
                     icon
-                    color="blue"
-                    onClick={() => this.onEditButtonClick(swap.swapId)}
+                    color={swap.swapped ? 'red' : 'green'}
+                    onClick={() => this.onSwapButtonClick(pos)}
                   >
-                    <Icon name="upload" />
-                  </Button>
-                  <Button
-                    icon
-                    color="red"
-                    onClick={() => this.onSwapDelete(swap.swapId)}
-                  >
-                    <Icon name="delete" />
+                    <Icon name={swap.swapped ? 'handshake' : 'hand paper'} />
                   </Button>
                 </Card.Content>
-              </>
-            )}
-            {userId !== swap.userId && (
-              <Card.Content extra>
-                <Button
-                  icon
-                  color={swap.swapped ? 'red' : 'green'}
-                  onClick={() => this.onSwapButtonClick(pos)}
-                >
-                  <Icon name={swap.swapped ? 'handshake' : 'hand paper'} />
-                </Button>
+              )}
+            </Card>
+          ))}
+        </Grid.Column>
+        <Grid.Column>
+          <Header as="h2">My swaps</Header>
+          {this.state.swaps.map((swap, pos) => (
+            <Card key={pos}>
+              <Image src={swap.attachmentUrl} wrapped ui={false} />
+              <Card.Content>
+                <Card.Header>{swap.description}</Card.Header>
+                <Card.Meta>
+                  <span className="date">{`Posted: ${dateFormat(
+                    swap.createdAt,
+                    'dd-mm-yyyy'
+                  )}`}</span>
+                </Card.Meta>
               </Card.Content>
-            )}
-          </Card>
-        ))}
+              {userId === swap.userId && (
+                <>
+                  {swap.offers > 0 && (
+                    <Step.Group>
+                      <Step>
+                        <Icon name="handshake" />
+                        <Step.Content>
+                          <Step.Title>You got swapped!</Step.Title>
+                          {swap.offers > 1 ? (
+                            <Step.Description>
+                              {`${swap.offers} people want to swap`}
+                            </Step.Description>
+                          ) : (
+                            <Step.Description>
+                              {'1 person wants to swap'}
+                            </Step.Description>
+                          )}
+                        </Step.Content>
+                      </Step>
+                    </Step.Group>
+                  )}
+                  <Card.Content extra>
+                    <Button
+                      icon
+                      color="blue"
+                      onClick={() => this.onEditButtonClick(swap.swapId)}
+                    >
+                      <Icon name="upload" />
+                    </Button>
+                    <Button
+                      icon
+                      color="red"
+                      onClick={() => this.onSwapDelete(swap.swapId)}
+                    >
+                      <Icon name="delete" />
+                    </Button>
+                  </Card.Content>
+                </>
+              )}
+              {userId !== swap.userId && (
+                <Card.Content extra>
+                  <Button
+                    icon
+                    color={swap.swapped ? 'red' : 'green'}
+                    onClick={() => this.onSwapButtonClick(pos)}
+                  >
+                    <Icon name={swap.swapped ? 'handshake' : 'hand paper'} />
+                  </Button>
+                </Card.Content>
+              )}
+            </Card>
+          ))}
+        </Grid.Column>
       </Grid>
     )
   }

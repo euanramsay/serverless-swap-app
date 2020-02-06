@@ -1,17 +1,26 @@
 import 'source-map-support/register'
 
-import { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda'
+import {
+  APIGatewayProxyEvent,
+  APIGatewayProxyHandler,
+  APIGatewayProxyResult
+} from 'aws-lambda'
 
 import { createLogger } from '../../utils/logger'
-import { getAllSwaps } from '../../businessLogic/swaps'
+import { getFeedSwaps } from '../../businessLogic/swaps'
+import { getUserIdFromJwt } from '../../auth/utils'
 
 const logger = createLogger('http')
 
-export const handler: APIGatewayProxyHandler = async (): Promise<APIGatewayProxyResult> => {
+export const handler: APIGatewayProxyHandler = async (
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
   try {
-    logger.info('Getting all swaps')
+    const userId = getUserIdFromJwt(event)
 
-    const Items = await getAllSwaps()
+    logger.info('Getting feed for user', { userId })
+
+    const Items = await getFeedSwaps(userId)
 
     logger.info('Successfully returned', { Items })
 

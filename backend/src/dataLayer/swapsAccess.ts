@@ -46,11 +46,13 @@ export class SwapAccess {
     await this.docClient.delete(deleteParams).promise()
   }
 
-  async getAllSwapsData(): Promise<SwapItem[]> {
+  async getFeedSwapsData(userId): Promise<SwapItem[]> {
     logger.info('Scanning')
 
     const scanParams = {
-      TableName: this.swapsTable
+      TableName: this.swapsTable,
+      FilterExpression: 'userId <> :u',
+      ExpressionAttributeValues: { ':u': userId }
     }
 
     logger.info('Scan', { scanParams })

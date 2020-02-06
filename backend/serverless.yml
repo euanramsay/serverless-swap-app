@@ -64,8 +64,8 @@ functions:
         Action: xray:PutTraceSegments
         Resource: '*'
 
-  GetAllSwaps:
-    handler: src/lambda/http/getAllSwaps.handler
+  GetFeedSwaps:
+    handler: src/lambda/http/getFeedSwaps.handler
     events:
       - http:
           method: get

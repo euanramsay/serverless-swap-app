@@ -17,7 +17,7 @@ export async function getSwaps(idToken: string): Promise<Swap[]> {
   return response.data.items
 }
 
-export async function getAllSwaps(idToken: string): Promise<Swap[]> {
+export async function getFeedSwaps(idToken: string): Promise<Swap[]> {
   console.log('Fetching swaps')
 
   const response = await Axios.get(`${apiEndpoint}/swaps/all`, {
