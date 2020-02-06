@@ -1,12 +1,14 @@
+import { FC, useState } from 'react'
 import { Grid, Menu, Segment } from 'semantic-ui-react'
 import { Link, Route, Router, Switch } from 'react-router-dom'
-import React, { Component } from 'react'
 
 import Auth from './auth/Auth'
 import { EditSwap } from './components/EditSwap'
 import { LogIn } from './components/LogIn'
 import { NotFound } from './components/NotFound'
 import { Swaps } from './components/Swaps'
+import history from './utils/history'
+import { useAuth0 } from './auth/react-auth0-spa'
 
 export interface AppProps {}
 
@@ -17,95 +19,104 @@ export interface AppProps {
 
 export interface AppState {}
 
-export default class App extends Component<AppProps, AppState> {
-  constructor(props: AppProps) {
-    super(props)
+export const App: FC = () => {
+  const [jwt, setJwt] = useState<string | undefined>(undefined)
+  const {
+    loading,
+    getIdTokenClaims,
+    isAuthenticated,
+    logout,
+    loginWithRedirect
+  } = useAuth0()
 
-    this.handleLogin = this.handleLogin.bind(this)
-    this.handleLogout = this.handleLogout.bind(this)
+  if (!loading) {
+    getIdTokenClaims().then((claims: IdToken) => {
+      if (claims && claims.__raw) {
+        setJwt(claims.__raw)
+      }
+    })
   }
 
-  handleLogin() {
-    this.props.auth.login()
-  }
+  return (
+    <div>
+      <Segment style={{ padding: '8em 0em' }} vertical>
+        <Grid container stackable verticalAlign="middle">
+          <Grid.Row>
+            <Grid.Column width={16}>
+              <Router history={history}>
+                {generateMenu(isAuthenticated, logout, loginWithRedirect)}
 
-  handleLogout() {
-    this.props.auth.logout()
-  }
+                {generateCurrentPage()}
+              </Router>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+      </Segment>
+    </div>
+  )
+}
 
-  render() {
+const generateMenu = (
+  isAuthenticated: any,
+  logout: any,
+  loginWithRedirect: any
+) => (
+  <Menu>
+    <Menu.Item name="home">
+      <Link to="/">Home</Link>
+    </Menu.Item>
+    <Menu.Menu position="right">
+      {logInLogOutButton(isAuthenticated, logout, loginWithRedirect)}
+    </Menu.Menu>
+  </Menu>
+)
+
+const logInLogOutButton = (
+  isAuthenticated: any,
+  logout: any,
+  loginWithRedirect: any
+) => {
+  if (isAuthenticated()) {
     return (
-      <div>
-        <Segment style={{ padding: '8em 0em' }} vertical>
-          <Grid container stackable verticalAlign="middle">
-            <Grid.Row>
-              <Grid.Column width={16}>
-                <Router history={this.props.history}>
-                  {this.generateMenu()}
-
-                  {this.generateCurrentPage()}
-                </Router>
-              </Grid.Column>
-            </Grid.Row>
-          </Grid>
-        </Segment>
-      </div>
+      <Menu.Item name="logout" onClick={(): void => logout()}>
+        Log Out
+      </Menu.Item>
     )
-  }
-
-  generateMenu() {
+  } else {
     return (
-      <Menu>
-        <Menu.Item name="home">
-          <Link to="/">Home</Link>
-        </Menu.Item>
-
-        <Menu.Menu position="right">{this.logInLogOutButton()}</Menu.Menu>
-      </Menu>
-    )
-  }
-
-  logInLogOutButton() {
-    if (this.props.auth.isAuthenticated()) {
-      return (
-        <Menu.Item name="logout" onClick={this.handleLogout}>
-          Log Out
-        </Menu.Item>
-      )
-    } else {
-      return (
-        <Menu.Item name="login" onClick={this.handleLogin}>
-          Log In
-        </Menu.Item>
-      )
-    }
-  }
-
-  generateCurrentPage() {
-    if (!this.props.auth.isAuthenticated()) {
-      return <LogIn auth={this.props.auth} />
-    }
-
-    return (
-      <Switch>
-        <Route
-          path="/"
-          exact
-          render={props => {
-            return <Swaps {...props} auth={this.props.auth} />
-          }}
-        />
-
-        <Route
-          path="/swaps/:swapId/edit"
-          exact
-          render={props => {
-            return <EditSwap {...props} auth={this.props.auth} />
-          }}
-        />
-
-        <Route component={NotFound} />
-      </Switch>
+      <Menu.Item name="login" onClick={(): void => loginWithRedirect({})}>
+        Log In
+      </Menu.Item>
     )
   }
 }
+
+const generateCurrentPage = (isAuthenticated: any) => {
+  if (!isAuthenticated()) {
+    return <LogIn auth={this.props.auth} />
+  }
+
+  return (
+    <Switch>
+      <Route
+        path="/"
+        exact
+        render={props => {
+          return <Swaps {...props} auth={this.props.auth} />
+        }}
+      />
+
+      <Route
+        path="/swaps/:swapId/edit"
+        exact
+        render={props => {
+          return <EditSwap {...props} auth={this.props.auth} />
+        }}
+      />
+
+      <Route component={NotFound} />
+    </Switch>
+  )
+}
+
+export default App
