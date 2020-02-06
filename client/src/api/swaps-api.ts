@@ -4,33 +4,27 @@ import { Swap } from '../types/Swap'
 import { UpdateSwapRequest } from '../types/UpdateSwapRequest'
 import { apiEndpoint } from '../config'
 
-export async function getSwaps(idToken: string): Promise<Swap[]> {
-  console.log('Fetching swaps')
-
+export async function getSwaps (idToken: string): Promise<Swap[]> {
   const response = await Axios.get(`${apiEndpoint}/swaps`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${idToken}`
     }
   })
-  console.log('Swaps:', response.data)
   return response.data.items
 }
 
-export async function getFeedSwaps(idToken: string): Promise<Swap[]> {
-  console.log('Fetching swaps')
-
+export async function getFeedSwaps (idToken: string): Promise<Swap[]> {
   const response = await Axios.get(`${apiEndpoint}/swaps/all`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${idToken}`
     }
   })
-  console.log('Swaps:', response.data)
   return response.data.items
 }
 
-export async function createSwap(
+export async function createSwap (
   idToken: string,
   newSwap: CreateSwapRequest
 ): Promise<Swap> {
@@ -47,7 +41,7 @@ export async function createSwap(
   return response.data.item
 }
 
-export async function patchSwap(
+export async function patchSwap (
   idToken: string,
   swapId: string,
   updatedSwap: UpdateSwapRequest
@@ -64,7 +58,7 @@ export async function patchSwap(
   )
 }
 
-export async function deleteSwap(
+export async function deleteSwap (
   idToken: string,
   swapId: string
 ): Promise<void> {
@@ -76,7 +70,7 @@ export async function deleteSwap(
   })
 }
 
-export async function getUploadUrl(
+export async function getUploadUrl (
   idToken: string,
   swapId: string
 ): Promise<string> {
@@ -93,7 +87,7 @@ export async function getUploadUrl(
   return response.data.uploadUrl
 }
 
-export async function uploadFile(
+export async function uploadFile (
   uploadUrl: string,
   file: Buffer
 ): Promise<void> {

@@ -9,10 +9,10 @@
     "dueDate": {
       "type": "string"
     },
-    "swapped": {
-      "type": "boolean"
+    "offers": {
+      "type": "array"
     }
   },
-  "required": ["name", "dueDate", "done"],
+  "required": ["description", "dueDate", "offers"],
   "additionalProperties": false
 }

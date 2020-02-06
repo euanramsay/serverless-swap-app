@@ -6,7 +6,7 @@ const fileUploadS3Bucket = process.env.FILE_UPLOAD_S3_BUCKET
 
 const swapAccess = new SwapAccess()
 
-export async function createSwap(
+export async function createSwap (
   description: string,
   dueDate: string,
   userId: string
@@ -14,7 +14,7 @@ export async function createSwap(
   const swapId = uuid()
   const createdAt = new Date().toJSON()
   const attachmentUrl = `https://${fileUploadS3Bucket}.s3.us-east-1.amazonaws.com/${swapId}`
-  const offers = 0
+  const offers = []
 
   return await swapAccess.createSwapData({
     swapId,
@@ -22,32 +22,31 @@ export async function createSwap(
     createdAt,
     description,
     dueDate,
-    swapped: false,
     attachmentUrl,
     offers
   })
 }
 
-export async function deleteSwap(swapId: string) {
+export async function deleteSwap (swapId: string) {
   return swapAccess.deleteSwapData(swapId)
 }
 
-export async function getFeedSwaps(userId: string): Promise<SwapItem[]> {
+export async function getFeedSwaps (userId: string): Promise<SwapItem[]> {
   return swapAccess.getFeedSwapsData(userId)
 }
 
-export function getSignedUrl(swapId: string): string {
+export function getSignedUrl (swapId: string): string {
   return swapAccess.getSignedUrlData(swapId)
 }
 
-export async function getSwap(swapId: string): Promise<SwapItem> {
+export async function getSwap (swapId: string): Promise<SwapItem> {
   return swapAccess.getSwapData(swapId)
 }
 
-export async function getSwaps(userId: string): Promise<SwapItem[]> {
+export async function getSwaps (userId: string): Promise<SwapItem[]> {
   return swapAccess.getSwapsData(userId)
 }
 
-export async function updateSwap(updatedItem: SwapItem) {
+export async function updateSwap (updatedItem: SwapItem) {
   return swapAccess.updateSwapData(updatedItem)
 }

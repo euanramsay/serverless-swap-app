@@ -4,7 +4,6 @@ export interface SwapItem {
   createdAt: string
   description: string
   dueDate: string
-  swapped: boolean
   attachmentUrl?: string
-  offers: number
+  offers: Array<string>
 }

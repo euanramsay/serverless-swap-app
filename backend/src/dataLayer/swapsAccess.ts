@@ -10,13 +10,13 @@ const AWS = AWSXRay.captureAWS(require('aws-sdk'))
 const logger = createLogger('dataLayer')
 
 export class SwapAccess {
-  constructor(
+  constructor (
     private readonly docClient: DocumentClient = new AWS.DynamoDB.DocumentClient(),
     private readonly swapsTable = process.env.SWAPS_TABLE,
     private readonly indexName = process.env.INDEX_NAME
   ) {}
 
-  async createSwapData(swap: SwapItem): Promise<SwapItem> {
+  async createSwapData (swap: SwapItem): Promise<SwapItem> {
     logger.info('Creating', { swap })
 
     const putParams = {
@@ -31,7 +31,7 @@ export class SwapAccess {
     return swap
   }
 
-  async deleteSwapData(swapId: string) {
+  async deleteSwapData (swapId: string) {
     logger.info('Deleting', { swapId })
 
     const deleteParams = {
@@ -46,7 +46,7 @@ export class SwapAccess {
     await this.docClient.delete(deleteParams).promise()
   }
 
-  async getFeedSwapsData(userId): Promise<SwapItem[]> {
+  async getFeedSwapsData (userId): Promise<SwapItem[]> {
     logger.info('Scanning')
 
     const scanParams = {
@@ -65,7 +65,7 @@ export class SwapAccess {
     return items as SwapItem[]
   }
 
-  getSignedUrlData(swapId: string) {
+  getSignedUrlData (swapId: string) {
     logger.info('Getting signed url', { swapId })
 
     const s3 = new AWS.S3({ signatureVersion: 'v4' })
@@ -83,7 +83,7 @@ export class SwapAccess {
     return uploadUrl
   }
 
-  async getSwapData(swapId: string): Promise<SwapItem> {
+  async getSwapData (swapId: string): Promise<SwapItem> {
     logger.info('Getting', { swapId })
 
     const getParams = { TableName: this.swapsTable, Key: { swapId } }
@@ -98,7 +98,7 @@ export class SwapAccess {
     return item as SwapItem
   }
 
-  async getSwapsData(userId: string): Promise<SwapItem[]> {
+  async getSwapsData (userId: string): Promise<SwapItem[]> {
     logger.info('Querying', { userId })
 
     const queryParams = {
@@ -118,22 +118,20 @@ export class SwapAccess {
     return items as SwapItem[]
   }
 
-  async updateSwapData(updatedItem: SwapItem) {
+  async updateSwapData (updatedItem: SwapItem) {
     logger.info('Updating', { updatedItem })
 
-    const { swapId, offers, swapped, description } = updatedItem
+    const { swapId, offers, description } = updatedItem
 
-    // Workaround to allow tick boxes in UI to work
     const updateExpression = offers
-      ? 'set offers = :o, swapped = :s, description = :d'
-      : 'set swapped = :s, description = :d'
+      ? 'set offers = :o, description = :d'
+      : 'set description = :d'
     const updateParams = {
       TableName: this.swapsTable,
       Key: { swapId },
       UpdateExpression: updateExpression,
       ExpressionAttributeValues: {
         ':o': offers,
-        ':s': swapped,
         ':d': description
       }
     }

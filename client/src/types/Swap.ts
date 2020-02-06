@@ -3,8 +3,7 @@ export interface Swap {
   createdAt: string
   description: string
   dueDate: string
-  swapped: boolean
   attachmentUrl?: string
   userId: string
-  offers: number
+  offers: Array<string>
 }
