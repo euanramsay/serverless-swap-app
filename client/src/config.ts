@@ -5,5 +5,5 @@ export const apiEndpoint = `https://${apiId}.execute-api.us-east-1.amazonaws.com
 export const authConfig = {
   domain: 'dev-hw08mj11.eu.auth0.com',
   clientId: 'y43wQj9pMbeWjB4FJOguCRY4tdK3BIIV',
-  callbackUrl: 'http://localhost:3000/callback'
+  callbackUrl: 'https://development.d1kkfs66jrggs0.amplifyapp.com/callback'
 }
