@@ -5,4 +5,6 @@ export interface Swap {
   dueDate: string
   swapped: boolean
   attachmentUrl?: string
+  userId: string
+  offers: number
 }

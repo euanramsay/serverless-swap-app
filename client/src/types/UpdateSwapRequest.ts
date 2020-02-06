@@ -1,5 +1,5 @@
 export interface UpdateSwapRequest {
   description: string
-  dueDate: string
+  offers: number
   swapped: boolean
 }

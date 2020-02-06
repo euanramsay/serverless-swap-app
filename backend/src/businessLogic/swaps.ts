@@ -14,6 +14,7 @@ export async function createSwap(
   const swapId = uuid()
   const createdAt = new Date().toJSON()
   const attachmentUrl = `https://${fileUploadS3Bucket}.s3.us-east-1.amazonaws.com/${swapId}`
+  const offers = 0
 
   return await swapAccess.createSwapData({
     swapId,
@@ -22,7 +23,8 @@ export async function createSwap(
     description,
     dueDate,
     swapped: false,
-    attachmentUrl
+    attachmentUrl,
+    offers
   })
 }
 

@@ -119,18 +119,18 @@ export class SwapAccess {
   async updateSwapData(updatedItem: SwapItem) {
     logger.info('Updating', { updatedItem })
 
-    const { swapId, dueDate, swapped, description } = updatedItem
+    const { swapId, offers, swapped, description } = updatedItem
 
     // Workaround to allow tick boxes in UI to work
-    const updateExpression = dueDate
-      ? 'set dueDate = :u, swapped = :s, description = :d'
+    const updateExpression = offers
+      ? 'set offers = :o, swapped = :s, description = :d'
       : 'set swapped = :s, description = :d'
     const updateParams = {
       TableName: this.swapsTable,
       Key: { swapId },
       UpdateExpression: updateExpression,
       ExpressionAttributeValues: {
-        ':u': dueDate,
+        ':o': offers,
         ':s': swapped,
         ':d': description
       }

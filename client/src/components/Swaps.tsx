@@ -2,21 +2,28 @@ import * as React from 'react'
 
 import {
   Button,
-  Checkbox,
+  Card,
   Divider,
   Grid,
   Header,
   Icon,
   Image,
   Input,
-  Loader
+  Loader,
+  Step
 } from 'semantic-ui-react'
-import { createSwap, deleteSwap, getSwaps, patchSwap } from '../api/swaps-api'
+import {
+  createSwap,
+  deleteSwap,
+  getAllSwaps,
+  patchSwap
+} from '../api/swaps-api'
 
 import Auth from '../auth/Auth'
 import { History } from 'history'
 import { Swap } from '../types/Swap'
 import dateFormat from 'dateformat'
+import { decode } from 'jsonwebtoken'
 import update from 'immutability-helper'
 
 interface SwapsProps {
@@ -72,17 +79,20 @@ export class Swaps extends React.PureComponent<SwapsProps, SwapsState> {
     }
   }
 
-  onSwapCheck = async (pos: number) => {
+  onSwapButtonClick = async (pos: number) => {
     try {
       const swap = this.state.swaps[pos]
       await patchSwap(this.props.auth.getIdToken(), swap.swapId, {
         description: swap.description,
-        dueDate: swap.dueDate,
+        offers: swap.offers + 1,
         swapped: !swap.swapped
       })
       this.setState({
         swaps: update(this.state.swaps, {
-          [pos]: { swapped: { $set: !swap.swapped } }
+          [pos]: {
+            swapped: { $set: !swap.swapped },
+            offers: { $set: swap.offers + 1 }
+          }
         })
       })
     } catch {
@@ -92,7 +102,7 @@ export class Swaps extends React.PureComponent<SwapsProps, SwapsState> {
 
   async componentDidMount() {
     try {
-      const swaps = await getSwaps(this.props.auth.getIdToken())
+      const swaps = await getAllSwaps(this.props.auth.getIdToken())
       this.setState({
         swaps,
         loadingSwaps: false
@@ -105,7 +115,9 @@ export class Swaps extends React.PureComponent<SwapsProps, SwapsState> {
   render() {
     return (
       <div>
-        <Header as="h1">Swap App</Header>
+        <Header as="h1">
+          Swapped! <Icon name={'sync alternate'} />
+        </Header>
 
         {this.renderCreateSwapInput()}
 
@@ -128,8 +140,8 @@ export class Swaps extends React.PureComponent<SwapsProps, SwapsState> {
             }}
             fluid
             actionPosition="left"
-            placeholder="To change the world..."
             onChange={this.handleDescriptionChange}
+            size="big"
           />
         </Grid.Column>
         <Grid.Column width={16}>
@@ -158,50 +170,74 @@ export class Swaps extends React.PureComponent<SwapsProps, SwapsState> {
   }
 
   renderSwapsList() {
+    const jwtToken: string = this.props.auth.getIdToken()
+    const userId: string = decode(jwtToken)!.sub
     return (
-      <Grid padded>
-        {this.state.swaps.map((swap, pos) => {
-          return (
-            <Grid.Row key={swap.swapId}>
-              <Grid.Column width={1} verticalAlign="middle">
-                <Checkbox
-                  onChange={() => this.onSwapCheck(pos)}
-                  checked={swap.swapped}
-                />
-              </Grid.Column>
-              <Grid.Column width={10} verticalAlign="middle">
-                {swap.description}
-              </Grid.Column>
-              <Grid.Column width={3} floated="right">
-                {swap.dueDate}
-              </Grid.Column>
-              <Grid.Column width={1} floated="right">
+      <Grid>
+        {this.state.swaps.map((swap, pos) => (
+          <Card key={pos}>
+            <Image src={swap.attachmentUrl} wrapped ui={false} />
+            <Card.Content>
+              <Card.Header>{swap.description}</Card.Header>
+              <Card.Meta>
+                <span className="date">{`Posted: ${dateFormat(
+                  swap.createdAt,
+                  'dd-mm-yyyy'
+                )}`}</span>
+              </Card.Meta>
+            </Card.Content>
+            {userId === swap.userId && (
+              <>
+                {swap.offers > 0 && (
+                  <Step.Group>
+                    <Step>
+                      <Icon name="handshake" />
+                      <Step.Content>
+                        <Step.Title>You got swapped!</Step.Title>
+                        {swap.offers > 1 ? (
+                          <Step.Description>
+                            {`${swap.offers} people want to swap`}
+                          </Step.Description>
+                        ) : (
+                          <Step.Description>
+                            {'1 person wants to swap'}
+                          </Step.Description>
+                        )}
+                      </Step.Content>
+                    </Step>
+                  </Step.Group>
+                )}
+                <Card.Content extra>
+                  <Button
+                    icon
+                    color="blue"
+                    onClick={() => this.onEditButtonClick(swap.swapId)}
+                  >
+                    <Icon name="upload" />
+                  </Button>
+                  <Button
+                    icon
+                    color="red"
+                    onClick={() => this.onSwapDelete(swap.swapId)}
+                  >
+                    <Icon name="delete" />
+                  </Button>
+                </Card.Content>
+              </>
+            )}
+            {userId !== swap.userId && (
+              <Card.Content extra>
                 <Button
                   icon
-                  color="blue"
-                  onClick={() => this.onEditButtonClick(swap.swapId)}
+                  color={swap.swapped ? 'red' : 'green'}
+                  onClick={() => this.onSwapButtonClick(pos)}
                 >
-                  <Icon name="pencil" />
+                  <Icon name={swap.swapped ? 'handshake' : 'hand paper'} />
                 </Button>
-              </Grid.Column>
-              <Grid.Column width={1} floated="right">
-                <Button
-                  icon
-                  color="red"
-                  onClick={() => this.onSwapDelete(swap.swapId)}
-                >
-                  <Icon name="delete" />
-                </Button>
-              </Grid.Column>
-              {swap.attachmentUrl && (
-                <Image src={swap.attachmentUrl} size="small" wrapped />
-              )}
-              <Grid.Column width={16}>
-                <Divider />
-              </Grid.Column>
-            </Grid.Row>
-          )
-        })}
+              </Card.Content>
+            )}
+          </Card>
+        ))}
       </Grid>
     )
   }
