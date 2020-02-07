@@ -136,7 +136,7 @@ export class Swaps extends React.PureComponent<SwapsProps, SwapsState> {
     return (
       <div>
         <Header as="h1">
-          Swapped! <Icon name={'sync alternate'} />
+          Swapped! <Icon name={'handshake outline'} />
         </Header>
 
         {this.renderCreateSwapInput()}
@@ -212,7 +212,9 @@ export class Swaps extends React.PureComponent<SwapsProps, SwapsState> {
                 <Card.Content extra>
                   <Button
                     icon
-                    color={feedSwap.offers.includes(userId) ? 'red' : 'green'}
+                    color={
+                      feedSwap.offers.includes(userId) ? 'yellow' : 'green'
+                    }
                     onClick={() => this.onSwapButtonClick(pos)}
                   >
                     <Icon
@@ -246,7 +248,7 @@ export class Swaps extends React.PureComponent<SwapsProps, SwapsState> {
               {swap.offers.length > 0 && (
                 <Step.Group>
                   <Step>
-                    <Icon name="handshake" />
+                    <Icon name="handshake outline" />
                     <Step.Content>
                       <Step.Title>You got swapped!</Step.Title>
                       {swap.offers.length > 1 ? (
