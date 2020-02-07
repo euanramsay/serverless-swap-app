@@ -59,7 +59,7 @@ For this you will also need to have an AWS account https://aws.amazon.com/
 You will need to install Postman https://www.postman.com/<br>
 Import the postman collection file `Udacity Capstone Project.postman_collection.json`
 
-Edit the collection and set the Variales values:<br>
+Edit the collection and set the Variables values:<br>
 `apiId` - From output of `serverless deploy --verbose` or from AWS console.<br>
 `authToken` - From the browser console, after running the front end locally and logging in.
 
