@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "update-swap",
+  "type": "object",
+  "properties": {
+    "description": {
+      "type": "string"
+    },
+    "offers": {
+      "type": "array"
+    }
+  },
+  "required": ["description", "offers"],
+  "additionalProperties": false
+}

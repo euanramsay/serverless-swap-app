@@ -38,8 +38,8 @@ provider:
 
   environment:
     SWAPS_TABLE: Swaps-${self:provider.stage}
-    SWAPS_TABLE_ARN: "arn:aws:dynamodb:us-east-1:*:table/${self:provider.environment.SWAPS_TABLE}"
-    FILE_UPLOAD_S3_BUCKET: file-upload-s3-bucket-${self:provider.stage}
+    SWAPS_TABLE_ARN: 'arn:aws:dynamodb:us-east-1:*:table/${self:provider.environment.SWAPS_TABLE}'
+    FILE_UPLOAD_S3_BUCKET: swaps-s3-bucket-${self:provider.stage}
     INDEX_NAME: user-index
 
 functions:
@@ -59,10 +59,28 @@ functions:
         Resource: ${self:provider.environment.SWAPS_TABLE_ARN}/index/${self:provider.environment.INDEX_NAME}
       - Effect: Allow
         Action: xray:PutTelemetryRecords
-        Resource: "*"
+        Resource: '*'
       - Effect: Allow
         Action: xray:PutTraceSegments
-        Resource: "*"
+        Resource: '*'
+
+  GetFeedSwaps:
+    handler: src/lambda/http/getFeedSwaps.handler
+    events:
+      - http:
+          method: get
+          path: swaps/all
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:Scan
+        Resource: ${self:provider.environment.SWAPS_TABLE_ARN}
+      - Effect: Allow
+        Action: xray:PutTelemetryRecords
+        Resource: '*'
+      - Effect: Allow
+        Action: xray:PutTraceSegments
+        Resource: '*'
 
   CreateSwap:
     handler: src/lambda/http/createSwap.handler
@@ -76,17 +94,17 @@ functions:
             summary: Create swap
             description: Create a new swap
             requestModels:
-              "application/json": CreateSwap
+              'application/json': CreateSwap
     iamRoleStatements:
       - Effect: Allow
         Action: dynamodb:PutItem
         Resource: ${self:provider.environment.SWAPS_TABLE_ARN}
       - Effect: Allow
         Action: xray:PutTelemetryRecords
-        Resource: "*"
+        Resource: '*'
       - Effect: Allow
         Action: xray:PutTraceSegments
-        Resource: "*"
+        Resource: '*'
 
   UpdateSwap:
     handler: src/lambda/http/updateSwap.handler
@@ -100,7 +118,7 @@ functions:
             summary: Update swap
             description: Update a swap
             requestModels:
-              "application/json": UpdateSwap
+              'application/json': UpdateSwap
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -109,10 +127,10 @@ functions:
         Resource: ${self:provider.environment.SWAPS_TABLE_ARN}
       - Effect: Allow
         Action: xray:PutTelemetryRecords
-        Resource: "*"
+        Resource: '*'
       - Effect: Allow
         Action: xray:PutTraceSegments
-        Resource: "*"
+        Resource: '*'
 
   DeleteSwap:
     handler: src/lambda/http/deleteSwap.handler
@@ -127,10 +145,10 @@ functions:
         Resource: ${self:provider.environment.SWAPS_TABLE_ARN}
       - Effect: Allow
         Action: xray:PutTelemetryRecords
-        Resource: "*"
+        Resource: '*'
       - Effect: Allow
         Action: xray:PutTraceSegments
-        Resource: "*"
+        Resource: '*'
 
   GenerateUploadUrl:
     handler: src/lambda/http/generateUploadUrl.handler
@@ -142,19 +160,19 @@ functions:
     iamRoleStatements:
       - Effect: Allow
         Action: xray:PutTelemetryRecords
-        Resource: "*"
+        Resource: '*'
       - Effect: Allow
         Action: xray:PutTraceSegments
-        Resource: "*"
+        Resource: '*'
 
 resources:
   Resources:
     RequestBodyValidator:
       Type: AWS::ApiGateway::RequestValidator
       Properties:
-        Name: "request-body-validator"
+        Name: 'request-body-validator'
         RestApiId:
-          Ref: "ApiGatewayRestApi"
+          Ref: 'ApiGatewayRestApi'
         ValidateRequestBody: true
         ValidateRequestParameters: false
 
@@ -186,9 +204,9 @@ resources:
         CorsConfiguration:
           CorsRules:
             - AllowedOrigins:
-                - "*"
+                - '*'
               AllowedHeaders:
-                - "*"
+                - '*'
               AllowedMethods:
                 - GET
                 - PUT
@@ -202,11 +220,11 @@ resources:
       Properties:
         PolicyDocument:
           Id: MyPolicy
-          Version: "2012-10-17"
+          Version: '2012-10-17'
           Statement:
             - Sid: PublicReadForGetBucketObjects
               Effect: Allow
-              Principal: "*"
-              Action: ["s3:GetObject", "s3:Put*"]
-              Resource: "arn:aws:s3:::${self:provider.environment.FILE_UPLOAD_S3_BUCKET}/*"
+              Principal: '*'
+              Action: ['s3:GetObject', 's3:Put*']
+              Resource: 'arn:aws:s3:::${self:provider.environment.FILE_UPLOAD_S3_BUCKET}/*'
         Bucket: !Ref UploadBucket
