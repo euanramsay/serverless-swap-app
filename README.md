@@ -28,8 +28,8 @@ You can also install npm here: https://www.npmjs.com/get-npm
 
 To run the webapp:
 
-`cd client`
-`npm install` or `npm i`
+`cd client`<br>
+`npm install` or `npm i`<br>
 `npm run start`
 
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
@@ -44,23 +44,23 @@ You will need to edit the file `client/src/config.ts` providing configuration fo
 
 ## Deploying the backend to AWS
 
-The backend is build in TypeScript using Node.js. It is deployed to Amazon Web Services (AWS) using the serverless framework.
+The backend is build in TypeScript using Node.js. It is deployed to Amazon Web Services (AWS) using the serverless framework.<br>
 You will need to have Node.js https://nodejs.org/en/download/ and serverless framework https://serverless.com/framework/docs/providers/aws/guide/installation/ installed.
 
-AWS credential will need to be set up https://serverless.com/framework/docs/providers/aws/guide/credentials/
+AWS credential will need to be set up https://serverless.com/framework/docs/providers/aws/guide/credentials/<br>
 For this you will also need to have an AWS account https://aws.amazon.com/
 
-`cd backend`
-`npm install` or `npm i`
+`cd backend`<br>
+`npm install` or `npm i`<br>
 `serverless deploy --verbose` or `sls deploy -v`
 
 ## Testing the api deployed on AWS
 
-You will need to install Postman https://www.postman.com/
+You will need to install Postman https://www.postman.com/<br>
 Import the postman collection file `Udacity Capstone Project.postman_collection.json`
 
-Edit the collection and set the Variales values:
-`apiId` - From output of `serverless deploy --verbose` or from AWS console.
+Edit the collection and set the Variales values:<br>
+`apiId` - From output of `serverless deploy --verbose` or from AWS console.<br>
 `authToken` - From the browser console, after running the front end locally and logging in.
 
 ## Contributing
