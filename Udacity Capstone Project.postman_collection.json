@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "dfc05ffa-7387-4a7c-9026-cf149c802146",
+		"_postman_id": "19733967-5569-43e5-ac13-cac21c44086a",
 		"name": "Udacity Capstone Project",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -107,7 +107,7 @@
 					"response": []
 				},
 				{
-					"name": "Update todo",
+					"name": "Update swap",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -125,10 +125,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"offers\": 0,\n\t\"done\": true\n}"
+							"raw": "{\n\t\"offers\": [\"auth0|5e36b0c29b581a1ab03ef2f4, auth0|5e36b0c29b581a1ab03efe6h, auth0|5e36b0c29b581a1ab03ef255\"]\n}"
 						},
 						"url": {
-							"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/todos/34cbf4ff-18e7-42f6-b474-aaf5527103f7",
+							"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/swaps/0b7056db-101d-4970-9a97-175a7b0f8e28",
 							"protocol": "https",
 							"host": [
 								"{{apiId}}",
@@ -139,8 +139,8 @@
 							],
 							"path": [
 								"dev",
-								"todos",
-								"34cbf4ff-18e7-42f6-b474-aaf5527103f7"
+								"swaps",
+								"0b7056db-101d-4970-9a97-175a7b0f8e28"
 							]
 						}
 					},
@@ -168,7 +168,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/todos/d9b5c6c0-b4fa-4b5e-9b33-a3602872738d",
+							"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/swaps/3864aad2-a286-480e-b506-cf34733e0025",
 							"protocol": "https",
 							"host": [
 								"{{apiId}}",
@@ -179,8 +179,8 @@
 							],
 							"path": [
 								"dev",
-								"todos",
-								"d9b5c6c0-b4fa-4b5e-9b33-a3602872738d"
+								"swaps",
+								"3864aad2-a286-480e-b506-cf34733e0025"
 							]
 						}
 					},
@@ -202,7 +202,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/todos/124fd210-2f1d-402f-9565-0a543b3a0722/attachment",
+							"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/swaps/0b7056db-101d-4970-9a97-175a7b0f8e28/attachment",
 							"protocol": "https",
 							"host": [
 								"{{apiId}}",
@@ -213,8 +213,8 @@
 							],
 							"path": [
 								"dev",
-								"todos",
-								"124fd210-2f1d-402f-9565-0a543b3a0722",
+								"swaps",
+								"0b7056db-101d-4970-9a97-175a7b0f8e28",
 								"attachment"
 							]
 						}
@@ -271,13 +271,13 @@
 	],
 	"variable": [
 		{
-			"id": "356ce2a9-eb16-4317-b4c7-7de5e02ffc6a",
+			"id": "7c024133-413c-4bff-ab08-17c1cd80d08c",
 			"key": "apiId",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "3133a543-a4b6-4551-8172-47ccdb33d373",
+			"id": "5321cea7-1253-4db9-b2dd-3087ba0c1d98",
 			"key": "authToken",
 			"value": "",
 			"type": "string"

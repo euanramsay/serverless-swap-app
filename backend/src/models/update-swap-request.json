@@ -6,13 +6,10 @@
     "description": {
       "type": "string"
     },
-    "dueDate": {
-      "type": "string"
-    },
     "offers": {
       "type": "array"
     }
   },
-  "required": ["description", "dueDate", "offers"],
+  "required": ["description", "offers"],
   "additionalProperties": false
 }

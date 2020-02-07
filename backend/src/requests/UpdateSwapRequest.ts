@@ -1,8 +1,7 @@
 /**
- * Fields in a request to update a single SWAP item.
+ * Fields in a request to update a single swap item.
  */
 export interface UpdateSwapRequest {
   description: string
-  dueDate: string
   offers: Array<string>
 }

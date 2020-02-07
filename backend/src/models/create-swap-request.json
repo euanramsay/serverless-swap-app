@@ -10,6 +10,6 @@
       "type": "string"
     }
   },
-  "required": ["info", "dueDate"],
+  "required": ["description", "dueDate"],
   "additionalProperties": false
 }
