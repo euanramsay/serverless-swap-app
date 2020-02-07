@@ -4,7 +4,7 @@ Swapped! is a social platform that allows users to swap things they can't use fo
 
 ## Functionality of the application
 
-The application will allow creating/removing/updating/fetching swap items. Each swap item can optionally have an attachmented image.
+The application allows creating/removing/updating/fetching of swap items. Each swap item can optionally have an attachmented image.
 
 Users need to sign in using the Auth0 sign in page, creating a new account or using their existing Google account.
 
